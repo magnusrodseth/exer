@@ -10,13 +10,63 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
-  id    String @id @default(uuid())
-  title String
-  text  String
-
-  // To return `Date`s intact through the API we need to add data transformers
-  // https://trpc.io/docs/data-transformers
+model Session {
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  date DateTime
+
+  SessionItem SessionItem[]
+}
+
+model SessionItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId Int
+  session    Session  @relation(fields: [sessionId], references: [id])
+  sessionId  Int
+
+  // Number of sets gets counted by the Prisma client
+  sets Set[]
+}
+
+model Set {
+  id Int @id @default(autoincrement())
+
+  repetitions     Int   @default(0)
+  weightOrMinutes Float // weight / minutes (kg / min)
+
+  sessionItem   SessionItem @relation(fields: [sessionItemId], references: [id])
+  sessionItemId Int
+}
+
+model Exercise {
+  id           Int           @id @default(autoincrement())
+  title        String
+  text         String
+  muscleGroups MuscleGroup[]
+  motion       Motion        @default(Undefined)
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  SessionItem SessionItem[]
+}
+
+enum MuscleGroup {
+  Pecs
+  Lats
+  Quads
+  Undefined
+}
+
+enum Motion {
+  Push
+  Pull
+  Legs
+  Cardio
+  Undefined
 }

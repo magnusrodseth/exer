@@ -33,10 +33,12 @@ yarn-error.log*
 # vercel
 .vercel
 
-*.db
-*.db-journal
-prisma/_sqlite/migrations
-
 
 # testing
 playwright/test-results
+
+# Prisma
+*.db
+*.db-journal
+prisma/_sqlite/migrations
+*.sql
