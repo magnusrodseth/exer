@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { MuscleGroup, Motion } from "@prisma/client"
-import { CompleteSessionItem, RelatedSessionItemModel } from "./index"
+import { CompleteSessionEntry, RelatedSessionEntryModel } from "./index"
 
 export const ExerciseModel = z.object({
   id: z.number().int(),
@@ -10,7 +10,7 @@ export const ExerciseModel = z.object({
 })
 
 export interface CompleteExercise extends z.infer<typeof ExerciseModel> {
-  SessionItem: CompleteSessionItem[]
+  SessionEntry: CompleteSessionEntry[]
 }
 
 /**
@@ -19,5 +19,5 @@ export interface CompleteExercise extends z.infer<typeof ExerciseModel> {
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
 export const RelatedExerciseModel: z.ZodSchema<CompleteExercise> = z.lazy(() => ExerciseModel.extend({
-  SessionItem: RelatedSessionItemModel.array(),
+  SessionEntry: RelatedSessionEntryModel.array(),
 }))

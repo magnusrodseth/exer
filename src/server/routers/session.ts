@@ -5,6 +5,7 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
+import { IdModel } from '~/schemas';
 import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
 
@@ -33,7 +34,6 @@ export const sessionRouter = createRouter()
       return session;
     },
   })
-  // read
   .query('all', {
     async resolve() {
       /**
@@ -48,7 +48,7 @@ export const sessionRouter = createRouter()
   })
   .query('byId', {
     input: z.object({
-      id: z.number().int(),
+      id: IdModel,
     }),
     async resolve({ input }) {
       const { id } = input;
@@ -65,10 +65,9 @@ export const sessionRouter = createRouter()
       return session;
     },
   })
-  // update
   .mutation('update', {
     input: z.object({
-      id: z.number().int(),
+      id: IdModel,
       // TODO
       data: z.object({
         title: z.string().min(1).max(32).optional(),
@@ -85,10 +84,9 @@ export const sessionRouter = createRouter()
       return session;
     },
   })
-  // delete
   .mutation('delete', {
     input: z.object({
-      id: z.number().int(),
+      id: IdModel,
     }),
     async resolve({ input }) {
       const { id } = input;

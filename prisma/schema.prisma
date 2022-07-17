@@ -25,10 +25,10 @@ model Session {
 
   date DateTime
 
-  SessionItem SessionItem[]
+  SessionEntry SessionEntry[]
 }
 
-model SessionItem {
+model SessionEntry {
   id Int @id @default(autoincrement())
 
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
@@ -46,8 +46,8 @@ model Set {
   repetitions     Int   @default(0)
   weightOrMinutes Float // weight / minutes (kg / min)
 
-  sessionItem   SessionItem @relation(fields: [sessionItemId], references: [id])
-  sessionItemId Int
+  sessionEntry   SessionEntry @relation(fields: [sessionEntryId], references: [id])
+  sessionEntryId Int
 }
 
 model Exercise {
@@ -56,7 +56,7 @@ model Exercise {
   muscleGroups MuscleGroup[]
   motion       Motion        @default(Undefined)
 
-  SessionItem SessionItem[]
+  SessionEntry SessionEntry[]
 }
 
 enum MuscleGroup {

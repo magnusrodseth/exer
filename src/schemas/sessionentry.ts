@@ -8,28 +8,29 @@ import {
   RelatedSetModel,
 } from './index';
 
-export const SessionItemModel = z.object({
+export const SessionEntryModel = z.object({
   id: z.number().int(),
   exerciseId: z.number().int(),
   sessionId: z.number().int(),
 });
 
-export interface CompleteSessionItem extends z.infer<typeof SessionItemModel> {
+export interface CompleteSessionEntry
+  extends z.infer<typeof SessionEntryModel> {
   exercise: CompleteExercise;
   session: CompleteSession;
   sets: CompleteSet[];
 }
 
 /**
- * RelatedSessionItemModel contains all relations on your model in addition to the scalars
+ * RelatedSessionEntryModel contains all relations on your model in addition to the scalars
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const RelatedSessionItemModel: z.ZodSchema<CompleteSessionItem> = z.lazy(
-  () =>
-    SessionItemModel.extend({
+export const RelatedSessionEntryModel: z.ZodSchema<CompleteSessionEntry> =
+  z.lazy(() =>
+    SessionEntryModel.extend({
       exercise: RelatedExerciseModel,
       session: RelatedSessionModel,
       sets: RelatedSetModel.array(),
     }),
-);
+  );

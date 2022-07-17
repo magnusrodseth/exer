@@ -14,7 +14,13 @@ type SessionPageProps = {
 
 const SessionPage: React.FC<SessionPageProps> = (props) => {
   const { id } = props;
-  const sessionQuery = trpc.useQuery(['session.byId', { id }]);
+  const sessionQuery = trpc.useQuery(['session.byId', { id }], {
+    onError(err) {
+      // TODO
+      console.log(err);
+    },
+  });
+  const updateSessionMutation = trpc.useMutation(['session.update']);
 
   const {
     register,
@@ -22,10 +28,6 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
     watch,
     formState: { errors, isValid, isValidating },
   } = useForm<AddSession>();
-
-  const onSubmit: SubmitHandler<AddSession> = (data) => {
-    console.log(data);
-  };
 
   const data = watch();
 
@@ -35,9 +37,15 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
     }
   }, [data, isValid, isValidating]);
 
+  const onSubmit: SubmitHandler<AddSession> = (data) => {
+    console.log(data);
+  };
+
+  const handleNewSessionEntry = () => { };
+
   return (
     <div>
-      {sessionQuery.data ? (
+      {sessionQuery.data && (
         <div>
           <h1 className="text-4xl">{dateToDDMMYYYY(sessionQuery.data.date)}</h1>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -49,9 +57,9 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
             />
             <input type="submit" className="hidden" />
           </form>
+
+          <button onClick={handleNewSessionEntry}>new entry</button>
         </div>
-      ) : (
-        <></>
       )}
     </div>
   );
