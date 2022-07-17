@@ -22,17 +22,11 @@ export const appRouter = createRouter()
    * @link https://trpc.io/docs/error-formatting
    */
   // .formatError(({ shape, error }) => { })
-  /**
-   * Add a health check endpoint to be called with `/api/trpc/healthz`
-   */
-  .query('healthz', {
+  .query('health', {
     async resolve() {
-      return 'yay!';
+      return 'alive';
     },
   })
-  /**
-   * Merge `postRouter` under `post.`
-   */
-  .merge('post.', sessionRouter);
+  .merge('session.', sessionRouter);
 
 export type AppRouter = typeof appRouter;

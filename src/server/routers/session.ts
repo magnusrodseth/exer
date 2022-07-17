@@ -5,7 +5,6 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { SessionModel } from '~/schemas';
 import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
 
@@ -20,12 +19,15 @@ const defaultSessionSelect = Prisma.validator<Prisma.SessionSelect>()({
 });
 
 export const sessionRouter = createRouter()
-  // create
   .mutation('add', {
-    input: SessionModel,
+    input: z.object({
+      date: z.date(),
+    }),
     async resolve({ input }) {
       const session = await prisma.session.create({
-        data: input,
+        data: {
+          date: input.date.toISOString(),
+        },
         select: defaultSessionSelect,
       });
       return session;

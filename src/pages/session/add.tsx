@@ -1,35 +1,19 @@
-import { useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { AddSession } from '~/types/forms';
+import { useRouter } from 'next/router';
+import { trpc } from '~/utils/trpc';
 
 const AddSessionPage: React.FC = () => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors, isValid, isValidating },
-  } = useForm<AddSession>();
-
-  const onSubmit: SubmitHandler<AddSession> = (data) => {
-    console.log(data);
-  };
-
-  const data = watch();
-
-  useEffect(() => {
-    if (isValid && !isValidating) {
-      onSubmit(data);
-    }
-  }, [data, isValid, isValidating]);
-
-  return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input type="date" {...register('date')} />
-        <input type="submit" className="hidden" />
-      </form>
-    </div>
+  const router = useRouter();
+  const addSessionMutation = trpc.useMutation(['session.add']);
+  addSessionMutation.mutate(
+    { date: new Date() },
+    {
+      onSuccess(input) {
+        router.replace(`/session/${input.id}`);
+      },
+    },
   );
+
+  return null;
 };
 
 export default AddSessionPage;
