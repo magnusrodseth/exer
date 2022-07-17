@@ -1,7 +1,5 @@
-import { Prisma } from '@prisma/client';
-import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { IdModel } from '~/schemas';
+import { IdModel } from '~/schemas/id';
 import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
 

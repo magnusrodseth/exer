@@ -1,15 +1,15 @@
-import * as z from "zod"
-import { CompleteSessionEntry, RelatedSessionEntryModel } from "./index"
+import * as z from 'zod';
+import { CompleteSessionEntry, RelatedSessionEntryModel } from './index';
 
 export const SetModel = z.object({
   id: z.number().int(),
   repetitions: z.number().int(),
   weightOrMinutes: z.number(),
   sessionEntryId: z.number().int(),
-})
+});
 
 export interface CompleteSet extends z.infer<typeof SetModel> {
-  sessionEntry: CompleteSessionEntry
+  sessionEntry: CompleteSessionEntry;
 }
 
 /**
@@ -17,6 +17,8 @@ export interface CompleteSet extends z.infer<typeof SetModel> {
  *
  * NOTE: Lazy required in case of potential circular dependencies within schema
  */
-export const RelatedSetModel: z.ZodSchema<CompleteSet> = z.lazy(() => SetModel.extend({
-  sessionEntry: RelatedSessionEntryModel,
-}))
+export const RelatedSetModel: z.ZodSchema<CompleteSet> = z.lazy(() =>
+  SetModel.extend({
+    sessionEntry: RelatedSessionEntryModel,
+  }),
+);

@@ -4,6 +4,8 @@
 import { createRouter } from '../createRouter';
 import { sessionRouter } from './session';
 import superjson from 'superjson';
+import { sessionEntryRouter } from './sessionEntry';
+import { exerciseRouter } from './exercise';
 
 /**
  * Create your application's root router
@@ -27,6 +29,8 @@ export const appRouter = createRouter()
       return 'alive';
     },
   })
-  .merge('session.', sessionRouter);
+  .merge('session.', sessionRouter)
+  .merge('sessionEntry.', sessionEntryRouter)
+  .merge('exercise.', exerciseRouter);
 
 export type AppRouter = typeof appRouter;

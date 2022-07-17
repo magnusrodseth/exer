@@ -14,7 +14,9 @@ async function main() {
     },
     create: {
       id: 1,
-      name: 'First Exercise',
+      name: 'Bench',
+      muscleGroups: 'Pecs',
+      motion: 'Push',
     },
     update: {},
   });
