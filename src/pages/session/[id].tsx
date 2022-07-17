@@ -1,5 +1,5 @@
 import { GetServerSideProps } from 'next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { AddSession } from '~/types/forms';
 import { createSSGHelpers } from '@trpc/react/ssg';
@@ -7,22 +7,21 @@ import { appRouter } from '~/server/routers/_app';
 import superjson from 'superjson';
 import { trpc } from '~/utils/trpc';
 import dateToDDMMYYYY from '~/utils/dateToDDMMYYYY';
-import { Dropdown } from 'react-daisyui';
+import { CompleteSessionEntry } from '~/schemas';
 
 type SessionPageProps = {
-  id: number;
+  sessionId: number;
 };
 
 const SessionPage: React.FC<SessionPageProps> = (props) => {
-  const { id } = props;
-  const sessionQuery = trpc.useQuery(['session.byId', { id }], {
+  const { sessionId } = props;
+  const sessionQuery = trpc.useQuery(['session.byId', { id: sessionId }], {
     onError(err) {
       // TODO
       console.log(err);
     },
   });
   const allExercisesQuery = trpc.useQuery(['exercise.all']);
-  const updateSessionMutation = trpc.useMutation(['session.update']);
 
   const {
     register,
@@ -30,6 +29,10 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
     watch,
     formState: { errors, isValid, isValidating },
   } = useForm<AddSession>();
+
+  const [sessionEntries, setSessionEntries] = useState<
+    (CompleteSessionEntry | null)[]
+  >([]);
 
   const data = watch();
 
@@ -43,7 +46,9 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
     console.log(data);
   };
 
-  const handleNewSessionEntry = () => { };
+  const handleNewSessionEntry = () => {
+    setSessionEntries([...sessionEntries, null]);
+  };
 
   return (
     <div>
@@ -62,22 +67,37 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
 
           <button onClick={handleNewSessionEntry}>new entry</button>
 
-          {/* TODO: Hide this behind clicking the button */}
-          <div className="dropdown">
-            <label tabIndex={0} className="btn m-1">
-              Select exercise
-            </label>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              {allExercisesQuery.data?.map((exercise) => (
-                <li key={exercise.id}>
-                  <span>{exercise.name}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {sessionEntries.map((entry, index) => (
+            <div key={index}>
+              <div className="dropdown">
+                <label tabIndex={0} className="btn m-1">
+                  Select exercise
+                </label>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                  {allExercisesQuery.data?.map((exercise) => (
+                    <li key={exercise.id}>
+                      <span>{exercise.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h2>set 1</h2>
+                <label htmlFor="">reps</label>
+                <input type="number" />
+
+                <label htmlFor="">weight / minutes</label>
+                <input type="number" />
+              </div>
+
+              <button className="btn btn-square btn-accent text-2xl">+</button>
+              <button className="btn btn-square text-2xl">🗑️</button>
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -92,9 +112,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
 
   const idFromParams = context.params?.id as string;
-  const id = parseInt(idFromParams);
+  const sessionId = parseInt(idFromParams);
 
-  if (!id) {
+  if (!sessionId) {
     return {
       redirect: {
         destination: '/',
@@ -104,12 +124,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   // Prefetch
-  await ssg.fetchQuery('session.byId', { id });
+  await ssg.fetchQuery('session.byId', { id: sessionId });
 
   return {
     props: {
       trpcState: ssg.dehydrate(),
-      id,
+      sessionId,
     },
   };
 };
