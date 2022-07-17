@@ -5,36 +5,30 @@
 import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
+import { SessionModel } from '~/schemas';
 import { createRouter } from '~/server/createRouter';
 import { prisma } from '~/server/prisma';
 
 /**
- * Default selector for Post.
+ * Default selector for Session.
  * It's important to always explicitly say which fields you want to return in order to not leak extra information
  * @see https://github.com/prisma/prisma/issues/9353
  */
-const defaultPostSelect = Prisma.validator<Prisma.PostSelect>()({
+const defaultSessionSelect = Prisma.validator<Prisma.SessionSelect>()({
   id: true,
-  title: true,
-  text: true,
-  createdAt: true,
-  updatedAt: true,
+  date: true,
 });
 
-export const postRouter = createRouter()
+export const sessionRouter = createRouter()
   // create
   .mutation('add', {
-    input: z.object({
-      id: z.string().uuid().optional(),
-      title: z.string().min(1).max(32),
-      text: z.string().min(1),
-    }),
+    input: SessionModel,
     async resolve({ input }) {
-      const post = await prisma.post.create({
+      const session = await prisma.session.create({
         data: input,
-        select: defaultPostSelect,
+        select: defaultSessionSelect,
       });
-      return post;
+      return session;
     },
   })
   // read
@@ -45,34 +39,35 @@ export const postRouter = createRouter()
        * @link https://trpc.io/docs/useInfiniteQuery
        */
 
-      return prisma.post.findMany({
-        select: defaultPostSelect,
+      return prisma.session.findMany({
+        select: defaultSessionSelect,
       });
     },
   })
   .query('byId', {
     input: z.object({
-      id: z.string(),
+      id: z.number().int(),
     }),
     async resolve({ input }) {
       const { id } = input;
-      const post = await prisma.post.findUnique({
+      const session = await prisma.session.findUnique({
         where: { id },
-        select: defaultPostSelect,
+        select: defaultSessionSelect,
       });
-      if (!post) {
+      if (!session) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: `No post with id '${id}'`,
+          message: `No session with id '${id}'`,
         });
       }
-      return post;
+      return session;
     },
   })
   // update
-  .mutation('edit', {
+  .mutation('update', {
     input: z.object({
-      id: z.string().uuid(),
+      id: z.number().int(),
+      // TODO
       data: z.object({
         title: z.string().min(1).max(32).optional(),
         text: z.string().min(1).optional(),
@@ -80,22 +75,22 @@ export const postRouter = createRouter()
     }),
     async resolve({ input }) {
       const { id, data } = input;
-      const post = await prisma.post.update({
+      const session = await prisma.session.update({
         where: { id },
         data,
-        select: defaultPostSelect,
+        select: defaultSessionSelect,
       });
-      return post;
+      return session;
     },
   })
   // delete
   .mutation('delete', {
     input: z.object({
-      id: z.string(),
+      id: z.number().int(),
     }),
     async resolve({ input }) {
       const { id } = input;
-      await prisma.post.delete({ where: { id } });
+      await prisma.session.delete({ where: { id } });
       return {
         id,
       };
