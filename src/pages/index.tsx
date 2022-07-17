@@ -22,8 +22,6 @@ const IndexPage = () => {
       <button onClick={handleOnClick}>new session</button>
 
       <div>{JSON.stringify(addSessionMutation.data)}</div>
-
-      <Link href={`/session/${30}`}>goto session</Link>
     </div>
   );
 };

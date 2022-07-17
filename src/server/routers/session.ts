@@ -26,7 +26,7 @@ export const sessionRouter = createRouter()
     async resolve({ input }) {
       const session = await prisma.session.create({
         data: {
-          date: input.date.toISOString(),
+          date: input.date,
         },
         select: defaultSessionSelect,
       });

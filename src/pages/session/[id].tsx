@@ -1,12 +1,12 @@
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { GetServerSideProps } from 'next';
 import { useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { AddSession } from '~/types/forms';
-import { Session } from '~/types/session';
 import { createSSGHelpers } from '@trpc/react/ssg';
 import { appRouter } from '~/server/routers/_app';
 import superjson from 'superjson';
 import { trpc } from '~/utils/trpc';
+import dateToDDMMYYYY from '~/utils/dateToDDMMYYYY';
 
 type SessionPageProps = {
   id: number;
@@ -15,8 +15,6 @@ type SessionPageProps = {
 const SessionPage: React.FC<SessionPageProps> = (props) => {
   const { id } = props;
   const sessionQuery = trpc.useQuery(['session.byId', { id }]);
-
-  console.log(sessionQuery.data);
 
   const {
     register,
@@ -39,10 +37,22 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input type="date" {...register('date')} />
-        <input type="submit" className="hidden" />
-      </form>
+      {sessionQuery.data ? (
+        <div>
+          <h1 className="text-4xl">{dateToDDMMYYYY(sessionQuery.data.date)}</h1>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+              type="date"
+              {...register('date')}
+              // TODO: Refactor
+              value={dateToDDMMYYYY(sessionQuery.data.date)}
+            />
+            <input type="submit" className="hidden" />
+          </form>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
