@@ -14,8 +14,7 @@ async function main() {
     },
     create: {
       id: 1,
-      title: 'First Exercise',
-      text: 'This is an example exercise generated from `prisma/seed.ts`',
+      name: 'First Exercise',
     },
     update: {},
   });
