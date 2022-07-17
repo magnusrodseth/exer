@@ -8,6 +8,8 @@ import superjson from 'superjson';
 import { trpc } from '~/utils/trpc';
 import dateToDDMMYYYY from '~/utils/dateToDDMMYYYY';
 import { CompleteSessionEntry } from '~/schemas';
+import { Exercise } from '@prisma/client';
+import SessionEntryInput from '~/components/SessionEntryInput';
 
 type SessionPageProps = {
   sessionId: number;
@@ -21,7 +23,6 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
       console.log(err);
     },
   });
-  const allExercisesQuery = trpc.useQuery(['exercise.all']);
 
   const {
     register,
@@ -60,43 +61,20 @@ const SessionPage: React.FC<SessionPageProps> = (props) => {
               type="date"
               {...register('date')}
               // TODO: Refactor
-              value={dateToDDMMYYYY(sessionQuery.data.date)}
+              value={sessionQuery.data.date.toISOString().substring(0, 10)}
             />
             <input type="submit" className="hidden" />
           </form>
 
-          <button onClick={handleNewSessionEntry}>new entry</button>
+          <button
+            onClick={handleNewSessionEntry}
+            className="btn btn-primary m-2"
+          >
+            + session entry
+          </button>
 
           {sessionEntries.map((entry, index) => (
-            <div key={index}>
-              <div className="dropdown">
-                <label tabIndex={0} className="btn m-1">
-                  Select exercise
-                </label>
-                <ul
-                  tabIndex={0}
-                  className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
-                >
-                  {allExercisesQuery.data?.map((exercise) => (
-                    <li key={exercise.id}>
-                      <span>{exercise.name}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h2>set 1</h2>
-                <label htmlFor="">reps</label>
-                <input type="number" />
-
-                <label htmlFor="">weight / minutes</label>
-                <input type="number" />
-              </div>
-
-              <button className="btn btn-square btn-accent text-2xl">+</button>
-              <button className="btn btn-square text-2xl">🗑️</button>
-            </div>
+            <SessionEntryInput key={index} />
           ))}
         </div>
       )}
